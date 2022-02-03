@@ -17,7 +17,7 @@ for row in mycsv:
 
 orderedRows = []
 for x in range(1, numCounties + 1):  # order array by license number
-    for y in rows: # loop through whole list to find the current index
+    for y in rows:  # loop through whole list to find the current index
         if int(y[2]) == x:  # if the license number is the same as our current index
             orderedRows.append(y)
             rows.remove(y)  # get rid of it so we don't have to check it again
@@ -48,35 +48,51 @@ Image1 = canvas.create_image(winwidth * 0.25, winheight * 0.60, image=img1, anch
 Image2 = canvas.create_image(winwidth * 0.75, winheight * 0.60, image=img2, anchor='center')
 
 
-def returnInfo():  # populate the gui with the information
+def returninfo():  # populate the gui with the information
     global myError
     global img1
     global img2
     try:
         if myValue.get() != "":  # make sure it isn't empty
-            myIndex = int(myValue.get()) - 1  # get index
-            myStateVal = orderedRows[myIndex][0]
-            mySeatVal = orderedRows[myIndex][1]
-            path1 = "images/" + str(myValue.get()) + "-0.png"  # get path for images
-            path2 = "images/" + str(myValue.get()) + "-1.png"
-            if radioValue.get() == '0':  # radio button is only county
-                myState["text"] = "County Name: " + myStateVal
-                mySeat["text"] = ""
-                img1 = PhotoImage(file=path1)
-                img2 = PhotoImage()
-            elif radioValue.get() == '1':  # radio button is only seat
-                myState["text"] = ""
-                mySeat["text"] = "Seat City: " + mySeatVal
-                img1 = PhotoImage()
-                img2 = PhotoImage(file=path2)
-            else:    # radio button is both
-                myState["text"] = "County Name: " + myStateVal
-                mySeat["text"] = "Seat City: " + mySeatVal
-                img1 = PhotoImage(file=path1)
-                img2 = PhotoImage(file=path2)
-            canvas.itemconfig(Image1, image=img1, anchor='center')  # change images
-            canvas.itemconfig(Image2, image=img2, anchor='center')
-            myError['text'] = ""  # it worked so erase any errors
+            if int(myValue.get()) > 0:  # not 0 or negative
+                myIndex = int(myValue.get()) - 1  # get index
+                myStateVal = orderedRows[myIndex][0]
+                mySeatVal = orderedRows[myIndex][1]
+                path1 = "images/" + str(myValue.get()) + "-0.png"  # get path for images
+                path2 = "images/" + str(myValue.get()) + "-1.png"
+                if radioValue.get() == '0':  # radio button is only county
+                    myState["text"] = "County Name: " + myStateVal
+                    mySeat["text"] = ""
+                    img1 = PhotoImage(file=path1)
+                    img2 = PhotoImage()
+                    # place county label and images in center
+                    myState.place(x=winwidth/2, y=winheight / 4, anchor='center')
+                    mySeat.place(x=winwidth, y=winheight / 4, anchor='center')  # move seat label to the side
+                    canvas.coords(Image1, winwidth/2, winheight * 0.60)
+                elif radioValue.get() == '1':  # radio button is only seat
+                    myState["text"] = ""
+                    mySeat["text"] = "Seat City: " + mySeatVal
+                    img1 = PhotoImage()
+                    img2 = PhotoImage(file=path2)
+                    # place seat label and images in center
+                    myState.place(x=winwidth, y=winheight / 4, anchor='center')
+                    mySeat.place(x=winwidth/2, y=winheight / 4, anchor='center')  # move county label to the side
+                    canvas.coords(Image2, winwidth/2, winheight * 0.60)
+                else:  # radio button is both
+                    myState["text"] = "County Name: " + myStateVal
+                    mySeat["text"] = "Seat City: " + mySeatVal
+                    img1 = PhotoImage(file=path1)
+                    img2 = PhotoImage(file=path2)
+                    # return images and labels to the sides
+                    myState.place(x=winwidth * 0.25, y=winheight / 4, anchor='center')
+                    mySeat.place(x=winwidth * 0.75, y=winheight / 4, anchor='center')
+                    canvas.coords(Image1, winwidth * 0.25, winheight * 0.60)
+                    canvas.coords(Image2, winwidth * 0.75, winheight * 0.60)
+                canvas.itemconfig(Image1, image=img1, anchor='center')  # change images
+                canvas.itemconfig(Image2, image=img2, anchor='center')
+                myError['text'] = ""  # it worked so erase any errors
+            else:
+                myError['text'] = "Value not valid!"
     except IndexError:
         myError['text'] = "Value not valid!"
     except ValueError:
@@ -98,7 +114,7 @@ radio1.place(x=winwidth * 0.5, y=70, anchor='center')
 radio2 = Radiobutton(wn, text="Both", variable=radioValue, value='2')
 radio2.place(x=winwidth * 0.75, y=70, anchor='center')
 
-btnMyButton = tk.Button(wn, text="Enter", command=returnInfo)
+btnMyButton = tk.Button(wn, text="Enter", command=returninfo)
 btnMyButton.place(x=winwidth / 3, y=40, anchor='center')
 
 wn.mainloop()
